@@ -11,18 +11,16 @@ Version 1.002. Last Updated: 10/22/2014.
 
 *   [Introduction](#Introduction)
 *   [Welcome](#Welcome)
-*   [Q1: Reflex Agent](#Q1)
-*   [Q2: Minimax](#Q2)
-*   [Q3: Alpha-Beta Pruning](#Q3)
-*   [Q4: Expectimax](#Q4)
-*   [Q5: Evaluation Function](#Q5)
+*   [Q1: Minimax](#Q2)
+*   [Q2: Alpha-Beta Pruning](#Q3)
+*   [Q3: Evaluation Function](#Q5)
 
 * * *
 
 > ![](http://ai.berkeley.edu/projects/release/multiagent/v1/002/pacman_multi_agent.png)
 > 
 > Pacman, now with ghosts.  
-> Minimax, Expectimax,  
+> Minimax, Alpha-Beta Pruning,  
 > Evaluation.
 
 ### Introduction
@@ -101,53 +99,7 @@ The code for this project contains the following files, available as a [zip arch
 
 First, play a game of classic Pacman:
 
-`python pacman.py`
-
-Now, run the provided `ReflexAgent` in `multiAgents.py`:
-
-`python pacman.py -p ReflexAgent`
-
-Note that it plays quite poorly even on simple layouts:
-
-`python pacman.py -p ReflexAgent -l testClassic`
-
-Inspect its code (in `multiAgents.py`) and make sure you understand what it's doing.
-
-* * *
-
-### <a name="Q1"></a> Question 1 (4 points): Reflex Agent
-
-Improve the `ReflexAgent` in `multiAgents.py` to play respectably. The provided reflex agent code provides some helpful examples of methods that query the `GameState` for information. A capable reflex agent will have to consider both food locations and ghost locations to perform well. Your agent should easily and reliably clear the `testClassic` layout:
-
-`python pacman.py -p ReflexAgent -l testClassic`
-
-Try out your reflex agent on the default `mediumClassic` layout with one ghost or two (and animation off to speed up the display):
-
-`python pacman.py --frameTime 0 -p ReflexAgent -k 1`
-
-`python pacman.py --frameTime 0 -p ReflexAgent -k 2`
-
-How does your agent fare? It will likely often die with 2 ghosts on the default board, unless your evaluation function is quite good.
-
-_Note:_ As features, try the reciprocal of important values (such as distance to food) rather than just the values themselves.
-
-_Note:_ The evaluation function you're writing is evaluating state-action pairs; in later parts of the project, you'll be evaluating states.
-
-_Options:_ Default ghosts are random; you can also play for fun with slightly smarter directional ghosts using `-g DirectionalGhost`. If the randomness is preventing you from telling whether your agent is improving, you can use `-f` to run with a fixed random seed (same random choices every game). You can also play multiple games in a row with `-n`. Turn off graphics with `-q` to run lots of games quickly.
-
-_Grading:_ we will run your agent on the `openClassic` layout 10 times. You will receive 0 points if your agent times out, or never wins. You will receive 1 point if your agent wins at least 5 times, or 2 points if your agent wins all 10 games. You will receive an addition 1 point if your agent's average score is greater than 500, or 2 points if it is greater than 1000. You can try your agent out under these conditions with
-
-`python autograder.py -q q1`
-
-To run it without graphics, use:
-
-`python autograder.py -q q1 --no-graphics`
-
-Don't spend too much time on this question, though, as the meat of the project lies ahead.
-
-* * *
-
-### <a name="Q2"></a> Question 2 (5 points): Minimax
+### <a name="Q2"></a> Question 1 (5 points): Minimax
 
 Now you will write an adversarial search agent in the provided `MinimaxAgent` class stub in `multiAgents.py`. Your minimax agent should work with any number of ghosts, so you'll have to write an algorithm that is slightly more general than what you've previously seen in lecture. In particular, your minimax tree will have multiple min layers (one for each ghost) for every max layer.
 
@@ -182,7 +134,7 @@ _**Hints and Observations**_
 
 * * *
 
-### <a name="Q3"></a> Question 3 (5 points): Alpha-Beta Pruning
+### <a name="Q3"></a> Question 2 (5 points): Alpha-Beta Pruning
 
 Make a new agent that uses alpha-beta pruning to more efficiently explore the minimax tree, in `AlphaBetaAgent`. Again, your algorithm will be slightly more general than the pseudocode from lecture, so part of the challenge is to extend the alpha-beta pruning logic appropriately to multiple minimizer agents.
 
@@ -212,35 +164,8 @@ The correct implementation of alpha-beta pruning will lead to Pacman losing some
 
 * * *
 
-### <a name="Q4"></a> Question 4 (5 points): Expectimax
 
-Minimax and alpha-beta are great, but they both assume that you are playing against an adversary who makes optimal decisions. As anyone who has ever won tic-tac-toe can tell you, this is not always the case. In this question you will implement the `ExpectimaxAgent`, which is useful for modeling probabilistic behavior of agents who may make suboptimal choices.
-
-As with the search and constraint satisfaction problems covered so far in this class, the beauty of these algorithms is their general applicability. To expedite your own development, we've supplied some test cases based on generic trees. You can debug your implementation on small the game trees using the command:
-
-`python autograder.py -q q4`
-
-Debugging on these small and manageable test cases is recommended and will help you to find bugs quickly. Remember that in Python 3, Integer division automatically converts to floats, unlike in Java or C# or Ruby or most other programming languages. So, 1/2 is 0.5, not 0.
-
-Once your algorithm is working on small trees, you can observe its success in Pacman. Random ghosts are of course not optimal minimax agents, and so modeling them with minimax search may not be appropriate. `ExpectimaxAgent`, will no longer take the min over all ghost actions, but the expectation according to your agent's model of how the ghosts act. To simplify your code, assume you will only be running against an adversary which chooses amongst their `getLegalAction`s uniformly at random.
-
-To see how the ExpectimaxAgent behaves in Pacman, run:
-
-`python pacman.py -p ExpectimaxAgent -l minimaxClassic -a depth=3`
-
-You should now observe a more cavalier approach in close quarters with ghosts. In particular, if Pacman perceives that he could be trapped but might escape to grab a few more pieces of food, he'll at least try. Investigate the results of these two scenarios:
-
-`python pacman.py -p AlphaBetaAgent -l trappedClassic -a depth=3 -q -n 10`
-
-`python pacman.py -p ExpectimaxAgent -l trappedClassic -a depth=3 -q -n 10`
-
-You should find that your `ExpectimaxAgent` wins about half the time, while your `AlphaBetaAgent` always loses. Make sure you understand why the behavior here differs from the minimax case.
-
-The correct implementation of expectimax will lead to Pacman losing some of the tests. This is not a problem: as it is correct behaviour, it will pass the tests.
-
-* * *
-
-### <a name="Q5"></a> Question 5 (6 points): Evaluation Function
+### <a name="Q5"></a> Question 3 (6 points): Evaluation Function
 
 Write a better evaluation function for pacman in the provided function `betterEvaluationFunction`. The evaluation function should evaluate states, rather than actions like your reflex agent evaluation function did. You may use any tools at your disposal for evaluation, including your search code from the last project. With depth 2 search, your evaluation function should clear the `smallClassic` layout with one random ghost more than half the time and still run at a reasonable rate (to get full credit, Pacman should be averaging around 1000 points when he's winning).
 
